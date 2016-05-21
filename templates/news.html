@@ -1,0 +1,18 @@
+{{ define "news" }}
+{{ template "header" .}}
+<div id="news">
+	<h1>rss feed (from Digg)</h1>
+	<p class="subtext">retrieved from <a href="http://digg.com/user/2bbe142e874a424cb6c56c3752d62892/diggs.rss">http://digg.com/user/2bbe142e874a424cb6c56c3752d62892/diggs.rss</a></p>
+	<ol>
+		{{ range .Rss.Channel.Items }}
+		<li>
+			<a href="{{ .Link }}">{{ .Title }}</a>
+			<pre>{{ .Desc }}</pre>
+			<em>{{ .Date }}</em>
+		</li>
+		{{ end }}
+	</ol>
+	<div class="clear">&nbsp;</div>
+</div>
+{{ template "footer" .}}
+{{ end }}

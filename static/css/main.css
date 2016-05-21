@@ -23,6 +23,18 @@ header a:hover, footer a:hover {
 }
 header .subtitle {
     font-style: italic;
+    float:left;
+    clear:left;
+}
+header .menu {
+	float:right;
+	clear:right;
+}
+.subtext {
+	font-size:0.8em;
+	font-style: italic;
+	padding-top:5px;
+	margin-top:-15px;
 }
 #content {
     background: #f0f0f0;
@@ -45,4 +57,32 @@ header .subtitle {
 }
 .clear {
     clear:both;
+}
+.minh {
+	height:1px;
+	overflow:hidden;
+	margin:0;
+	padding:0;
+}
+#news ol {
+	list-style:none;
+	padding:0;
+	margin:0;
+	font-size:1em;
+}
+#news ol li {
+	border-bottom: 10px solid #ccc;
+	margin:0 0 20px 0;
+	padding:0 0 20px 0;
+}
+#news ol li em {
+	font-size:0.7em;
+}
+pre {
+	font-family: 'Open Sans', sans-serif;
+	white-space: pre-wrap;
+	white-space: -moz-pre-wrap;
+	white-space: -pre-wrap;
+	white-space: -o-pre-wrap;
+	word-wrap: break-word;
 }
