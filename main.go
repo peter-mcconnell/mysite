@@ -26,3 +26,7 @@ func init() {
 	http.HandleFunc("/news", NewsHandler)
 	http.HandleFunc("/", HomeHandler)
 }
+
+func main() {
+
+}
