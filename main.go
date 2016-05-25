@@ -22,9 +22,13 @@ func init() {
 	fs := http.FileServer(http.Dir("static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
-	// handlers
+	// admin handlers
+	http.HandleFunc("/s/snippets", SnippetsHandler)
+
+	// public handlers
 	http.HandleFunc("/news", NewsHandler)
 	http.HandleFunc("/", HomeHandler)
+
 }
 
 func main() {
