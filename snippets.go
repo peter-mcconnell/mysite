@@ -6,24 +6,60 @@ import (
 	"log"
 	"net/http"
 
+	"golang.org/x/net/context"
+
 	"google.golang.org/appengine"
+	"google.golang.org/appengine/datastore"
 	"google.golang.org/appengine/urlfetch"
 )
 
-type gistFile struct {
+type GistFile struct {
 	Content string `json:"content"`
 }
 
-type gist struct {
+type Gist struct {
+	Id          int64               `json:"id" datastore:"-"`
 	Description string              `json:"description"`
 	Public      bool                `json:"public"`
-	Files       map[string]gistFile `json:"files"`
+	Files       map[string]GistFile `json:"files"`
 }
 
 type snippetsTemplateVars struct {
 	FormErrors  []string
 	FormSuccess []string
-	Snippets    []gist
+	Snippets    []Gist
+}
+
+func (gist *Gist) key(c context.Context) *datastore.Key {
+	if gist.Id == 0 {
+		return datastore.NewIncompleteKey(c, "Gist", nil)
+	}
+	return datastore.NewKey(c, "Gist", "", gist.Id, nil)
+}
+
+func (gist *Gist) save(c context.Context) error {
+	k, err := datastore.Put(c, gist.key(c), gist)
+	if err != nil {
+		return err
+	}
+	gist.Id = k.IntID()
+	return nil
+}
+
+func GetGists(c context.Context) ([]Gist, error) {
+	q := datastore.NewQuery("Gist").Order("Description")
+
+	var gists []Gist
+	k, err := q.GetAll(c, &gists)
+	if err != nil {
+		return nil, err
+	}
+
+	for i := 0; i < len(gists); i++ {
+		gists[i].Id = k[i].IntID()
+	}
+
+	return gists, nil
 }
 
 func SnippetsHandler(w http.ResponseWriter, r *http.Request) {
@@ -43,12 +79,12 @@ func SnippetsHandler(w http.ResponseWriter, r *http.Request) {
 			if r.PostFormValue("where") == "2" {
 				public = false
 			}
-			gist := gist{
+			gist := Gist{
 				Description: r.PostFormValue("desc"),
 				Public:      public,
-				Files:       map[string]gistFile{},
+				Files:       map[string]GistFile{},
 			}
-			gist.Files[r.PostFormValue("filename")] = gistFile{
+			gist.Files[r.PostFormValue("filename")] = GistFile{
 				Content: r.PostFormValue("snippet"),
 			}
 			b, err := json.Marshal(gist)
