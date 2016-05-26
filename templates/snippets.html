@@ -44,6 +44,19 @@
 	</fieldset>
 	</form>
 	<div class="clear">&nbsp;</div>
+	{{ with .Snippets }}
+	<h2>snippets</h2>
+	<ul class="snippets">
+		{{ range . }}
+		<li>
+			{{.Desc}}
+			<pre>{{.Snippet}}</pre>
+			<a target="_blank" href="{{.Url}}">{{.Url}}</a>
+		</li>
+		{{ end }}
+	</ul>
+	{{ end }}
+	<div class="clear">&nbsp;</div>
 </div>
 {{ template "footer" .}}
 {{ end }}

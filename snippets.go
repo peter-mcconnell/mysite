@@ -18,7 +18,6 @@ type GistFile struct {
 }
 
 type Gist struct {
-	Id          int64               `json:"id" datastore:"-"`
 	Description string              `json:"description"`
 	Public      bool                `json:"public"`
 	Files       map[string]GistFile `json:"files"`
@@ -27,17 +26,24 @@ type Gist struct {
 type snippetsTemplateVars struct {
 	FormErrors  []string
 	FormSuccess []string
-	Snippets    []Gist
+	Snippets    []StoredGist
 }
 
-func (gist *Gist) key(c context.Context) *datastore.Key {
+type StoredGist struct {
+	Id      int64  `json:"id" datastore:"-"`
+	Url     string `json:"url"`
+	Desc    string `json:"desc"`
+	Snippet string `json:"snippet"`
+}
+
+func (gist *StoredGist) key(c context.Context) *datastore.Key {
 	if gist.Id == 0 {
 		return datastore.NewIncompleteKey(c, "Gist", nil)
 	}
 	return datastore.NewKey(c, "Gist", "", gist.Id, nil)
 }
 
-func (gist *Gist) save(c context.Context) error {
+func (gist *StoredGist) save(c context.Context) error {
 	k, err := datastore.Put(c, gist.key(c), gist)
 	if err != nil {
 		return err
@@ -46,10 +52,10 @@ func (gist *Gist) save(c context.Context) error {
 	return nil
 }
 
-func GetGists(c context.Context) ([]Gist, error) {
-	q := datastore.NewQuery("Gist").Order("Description")
+func GetGists(c context.Context) ([]StoredGist, error) {
+	q := datastore.NewQuery("Gist").Order("Desc")
 
-	var gists []Gist
+	var gists []StoredGist
 	k, err := q.GetAll(c, &gists)
 	if err != nil {
 		return nil, err
@@ -99,19 +105,25 @@ func SnippetsHandler(w http.ResponseWriter, r *http.Request) {
 				log.Fatal("HTTP Error: ", err)
 			}
 			defer resp.Body.Close()
-			for k, v := range resp.Header {
-				log.Println("key:", k, "value:", v)
-			}
 			err = json.NewDecoder(resp.Body).Decode(&responseObj)
 			if err != nil {
 				log.Fatal("Response JSON Error: ", err)
 			}
-			// @todo: write to datastore
 			success := "Successfully created: <a target=\"_blank\" href=\"" + responseObj["html_url"].(string) + "\">" + responseObj["html_url"].(string) + "</a>"
 			templateVars.FormSuccess = append(templateVars.FormSuccess, success)
+			// save to datastore
+			storedGist := StoredGist{
+				Url:     responseObj["html_url"].(string),
+				Desc:    r.PostFormValue("desc"),
+				Snippet: r.PostFormValue("snippet"),
+			}
+			if err := storedGist.save(c); err != nil {
+				log.Fatal(err)
+			}
 		}
 	}
 	// @todo grab snippets from datastore
+	templateVars.Snippets, _ = GetGists(c)
 	if err := templates.ExecuteTemplate(w, "snippets", templateVars); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
