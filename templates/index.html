@@ -1,18 +1,17 @@
 {{ define "home" }}
 {{ template "header" .}}
-<div id="social">
-	<div class="googleplus stackleft">
-		<div class="g-person" data-width="276" data-href="//plus.google.com/u/0/107944265693663926323" data-rel="author"></div>
-	</div>
-
-	<div class="github stackleft">
-		<div id="github-widget" data-username="pemcconnell"></div>
-	</div>
-
-	<div class="linkedin stackleft">
-		<script type="IN/MemberProfile" data-id="//www.linkedin.com/pub/peter-mcconnell/36/820/953" data-format="inline" data-related="false"></script>
-	</div>
-	<div class="clear">&nbsp;</div>
-</div>
+<div id='container'></div>
+<ol id='business_card'>
+  <li>
+    <span>cat ~/.details</span>
+    <ol>
+      <li>linkedin: <a href="https://www.linkedin.com/in/pemcconnell/">pemcconnell</a></li>
+      <li>github: <a href="https://github.com/pemcconnell">pemcconnell</a></li>
+      <li>twitter: <a href="https://twitter.com/PeteMcConnell_">@PeteMcConnell_</a></li>
+      <li>email: <a href="mailto:me@petermcconnell.com">me@petermcconnell.com</a></li>
+  </ol>
+  <li><span class="blinker">_</span></li>
+</ol>
+<script src="/static/js/bg.js?v=1.0"></script>
 {{ template "footer" .}}
 {{ end }}
