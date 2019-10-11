@@ -16,7 +16,7 @@ func errorHandler(w http.ResponseWriter, r *http.Request, status int) {
 	}
 }
 
-func init() {
+func main() {
 	log.Println("initiated ...")
 	// static assets
 	fs := http.FileServer(http.Dir("static"))
@@ -25,4 +25,5 @@ func init() {
 	// public handlers
 	http.HandleFunc("/", HomeHandler)
 
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }

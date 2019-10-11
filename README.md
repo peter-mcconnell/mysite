@@ -2,6 +2,18 @@
 
 Super simple Go app designed to run on AppEngine.
 
+run locally
+-----------
+
+```sh
+make run
+```
+
+Then visit http://localhost:8080/
+
+notes
+-----
+
 - Handlers in `./main.go`
 - Static assets in `./static`
 - HTML templates in `./templates`
